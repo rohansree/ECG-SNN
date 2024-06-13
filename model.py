@@ -1,20 +1,31 @@
 
 import torch
 import torch.nn as nn
-from norse.torch import LICell, LIFCell
+from norse.torch import LICell, LIFCell, LIFParameters
 from norse.torch import SequentialState
 
 class LIFNeuralNetwork(nn.Module):
     def __init__(self):
         super(LIFNeuralNetwork, self).__init__()
 
+        # SNN parameters
+        lif_params = LIFParameters(
+            tau_syn_inv=torch.tensor(2.0),  
+            tau_mem_inv=torch.tensor(0.05), 
+            v_leak=torch.tensor(0.0),
+            v_th=torch.tensor(1.0),
+            v_reset=torch.tensor(0.0),
+            alpha=torch.tensor(100.0),
+            method='super'
+        )
+
         #the models for the two channels are the same
         self.channel1_model = SequentialState(
             nn.Conv2d(1, 20, (5, 1), 1),      #first CNN layer
-            LIFCell(),                        #first SNN layer
+            LIFCell(lif_params),                        #first SNN layer
             nn.MaxPool2d((2, 1)),
             nn.Conv2d(20, 50, (5, 1), 1),     #second CNN layer
-            LIFCell(),                         #second SNN layer
+            LIFCell(lif_params),                         #second SNN layer
             nn.MaxPool2d((2, 1)),
             nn.Flatten(),                     #to keep the dimensions from breaking
         )
@@ -22,10 +33,10 @@ class LIFNeuralNetwork(nn.Module):
         #the models for the two channels are the same
         self.channel2_model = SequentialState(
             nn.Conv2d(1, 20, (5, 1), 1),      
-            LIFCell(),                        
+            LIFCell(lif_params),                        
             nn.MaxPool2d((2, 1)),
             nn.Conv2d(20, 50, (5, 1), 1),    
-            LIFCell(),
+            LIFCell(lif_params),
             nn.MaxPool2d((2, 1)),
             nn.Flatten(),                     
         )
