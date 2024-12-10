@@ -10,6 +10,7 @@ from scipy.signal import find_peaks
 
 def extract_features(record_path, annotation_path):
     record = wfdb.rdrecord(record_path)
+    print(annotation_path)
     annotation = wfdb.rdann(annotation_path, 'atr')
     signals = record.p_signal
 

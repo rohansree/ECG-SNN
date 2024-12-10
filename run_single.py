@@ -21,8 +21,9 @@ overall_start_time = time.time()
 
 
 #path of the SINGLE file
-annotation_path = '../mit-bih-arrhythmia-database-1.0.0/105'
-record_path = '../mit-bih-arrhythmia-database-1.0.0/105'
+annotation_path = '../ECG-SNN/mit-bih-arrhythmia-database-1.0.0/105'
+# mit-bih-arrhythmia-database-1.0.0
+record_path = '../ECG-SNN/mit-bih-arrhythmia-database-1.0.0/105'
 
 #pull the signals and corresponding labels from the file
 seq1, seq2, labels = extract_features(record_path, annotation_path)
