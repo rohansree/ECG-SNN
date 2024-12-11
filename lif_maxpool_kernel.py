@@ -14,8 +14,8 @@ def lif_maxpool_kernel(membrane, synaptic, input_signal, output, pool_size, tau_
         # v_th threshold
         #v_reset
 
-        #membrane
-        #synaptic
+        #membrane & synaptic are managed internally at layer
+        #just like norse implementation, we update them here
     
     #ix = threadIdx.x + blockIdx.x * blockDim.x
     tx = cuda.threadIdx.x
@@ -60,8 +60,7 @@ def lif_maxpool_kernel(membrane, synaptic, input_signal, output, pool_size, tau_
 
     if gx < width and gy<height:
         smem[ty, tx] = membrane[index]
-    else:
-        smem[ty,tx] = -float("inf") #robust against crashing with this
+    
 
     cuda.syncthreads()
     
@@ -73,6 +72,7 @@ def lif_maxpool_kernel(membrane, synaptic, input_signal, output, pool_size, tau_
         max_val = smem[ty,tx]
         if ty+1 < block_dim_y:
             max_val = max(max_val, smem[ty+1, tx]) #specifically optimized for (2,1) pooling
+            #max_val = max(max_val, smem[ty+pool_height, tx]) ... (however many number of combinations)
         
         pooled_row = gy//pool_height
         pooled_col = gx //pool_width
@@ -82,4 +82,5 @@ def lif_maxpool_kernel(membrane, synaptic, input_signal, output, pool_size, tau_
             pooled_idx = pooled_row * pooled_width + pooled_col
             output[pooled_idx] = max_val        
 
+        #output is 1d but smem is 2d
 

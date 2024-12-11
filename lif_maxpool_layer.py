@@ -8,8 +8,10 @@ class LIFMaxPool2d(torch.nn.Module):
         self.lif_params = lif_params
         self.pool_size = pool_size
 
+        #norse manages these internally, so necessary to do here as well
         self.membrane = None
         self.synaptic = None
+    
     
     def reset_state(self, batch_size, height, width, device):
         self.membrane = torch.zeros((batch_size, height, width), device=device)
@@ -20,13 +22,14 @@ class LIFMaxPool2d(torch.nn.Module):
 
         batch_size, channels, height, width = input_signal.shape
 
-        #height, width = input_signal.shape[-2:] #input signal is a 4D tensor
-
+        #for any reason any issues, just hard reset (prevent crashes)
         if self.membrane is None or self.synaptic is None or self.membrane.shape[-2] != (height, width):
             self.reset_state(batch_size, height, width, input_signal.device)
 
         input_signal = input_signal.detach()
         # input_signal.requires_grad_(False)
+
+        #make things flat bc output in cuda is 1d
 
         flat_size = height*width
 
@@ -53,6 +56,7 @@ class LIFMaxPool2d(torch.nn.Module):
         pooled_width = (width // self.pool_size[1]) * self.pool_size[1]
         expected_size = batch_size* channels* pooled_height*pooled_width
 
+        #just in case there is an error
         if output_flat.numel() > expected_size:
             output_flat = output_flat[:expected_size]
         elif output_flat.numel() < expected_size:

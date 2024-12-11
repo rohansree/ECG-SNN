@@ -24,8 +24,6 @@ class LIFNeuralNetwork(nn.Module):
 
         pool_size = (2,1)
 
-       
-
         #the models for the two channels are the same
         self.channel1_model = Sequential(
             nn.Conv2d(1, 20, (5, 1), 1),      #first CNN layer
@@ -52,16 +50,6 @@ class LIFNeuralNetwork(nn.Module):
              nn.Flatten(),                     #to keep the dimensions from breaking
         )
 
-        # #the models for the two channels are the same
-        # self.channel2_model = SequentialState(
-        #     nn.Conv2d(1, 20, (5, 1), 1),      
-        #     LIFCell(lif_params),                        
-        #     nn.MaxPool2d((2, 1)),
-        #     nn.Conv2d(20, 50, (5, 1), 1),    
-        #     LIFCell(lif_params),
-        #     nn.MaxPool2d((2, 1)),
-        #     nn.Flatten(),                     
-        # )
 
         self.fc1 = nn.Linear(29200, 800)  # adjusted to combine output of both channels
         self.fc2 = nn.Linear(800, 10)           # final output fc layer
